@@ -1,0 +1,76 @@
+//Array2DB struct
+
+struct Array2DB :CustomStringConvertible {
+    var values: [Int]
+    let rows: Int
+    let cols: Int
+    
+    //creates the 2-dimensional abstraction of our 'values' array
+    var description: String {
+        var d = ""
+        for r in 0..<rows {
+            for c in 0..<cols {
+                if c == cols - 1 {d += "\(values[getIndex(row: r, col: c)])\n"}
+                else {d += "\(values[getIndex(row: r, col: c)])"}
+            }
+        }
+        return d
+    }
+    
+    //a count of all the cells that are currently alive.
+    var numberLivingCells:Int {
+        var c = 0
+        for i in values {
+            if i == 1 {
+                c += 1
+            }
+        }
+    }
+    
+    //creates an empty array of 0's according to the specified number of rows and cols
+    init(rows: Int, cols: Int) {
+        self.rows = rows
+        self.cols = cols
+        values = [Int](repeating: 0, count: (rows+2)*(cols+2))
+    }
+    
+    //allows us to use the syntax [row, col] when interacting with an Array2DB
+    mutating subscript(row: Int, col: Int) -> Int {
+        get {
+            return values[getIndex(row: row, col: col)]
+        }
+        set(newValue) {
+            values[getIndex(row: row, col: col)] = newValue
+        }
+    }
+    
+    //converts the abstract idea of row, col to the corresponding index in 'values'
+    func getIndex(row: Int, col: Int) -> Int {
+        assert((row >= -1) && (row <= rows), "row \(row) is out of bounds")
+        assert((col >= -1) && (col <= cols), "col \(col) is out of bounds")
+        return (row + 1)*rows + col + 1
+    }
+    
+    //sets a cell to become alive on the next run
+    mutating func setCellAlive(x:Int, y:Int) {
+        values[getIndex(row:x, col:y)] = 1
+    }
+    
+    //kill a cell for the next run
+    mutating func setCellDead(x:Int, y:Int) {
+        values[getIndex(row:x, col:y)] = 0
+    }
+    
+    //reset
+    mutating func resetColony() {
+        for x in values {
+            x = 0
+        }
+    }
+    
+    //finds if the cell named is alive.
+    func isCellAlive(x:Int, y:Int) -> Bool {
+        return values[row:x, col:y]
+    }
+    
+}

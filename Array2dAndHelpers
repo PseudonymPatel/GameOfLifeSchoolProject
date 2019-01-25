@@ -1,4 +1,7 @@
 //Array2DB struct
+enum CellState {
+    case dead = 0, alive
+}
 
 struct Array2DB :CustomStringConvertible {
     var values: [Int]
@@ -10,8 +13,11 @@ struct Array2DB :CustomStringConvertible {
         var d = ""
         for r in 0..<rows {
             for c in 0..<cols {
-                if c == cols - 1 {d += "\(values[getIndex(row: r, col: c)])\n"}
-                else {d += "\(values[getIndex(row: r, col: c)])"}
+                if c == cols - 1 {
+                    d += "\(values[getIndex(row: r, col: c)])\n"
+                } else {
+                    d += "\(values[getIndex(row: r, col: c)])"
+                }
             }
         }
         return d
@@ -25,6 +31,7 @@ struct Array2DB :CustomStringConvertible {
                 c += 1
             }
         }
+        return c
     }
     
     //creates an empty array of 0's according to the specified number of rows and cols
@@ -35,7 +42,7 @@ struct Array2DB :CustomStringConvertible {
     }
     
     //allows us to use the syntax [row, col] when interacting with an Array2DB
-    mutating subscript(row: Int, col: Int) -> Int {
+    subscript(row: Int, col: Int) -> Int {
         get {
             return values[getIndex(row: row, col: col)]
         }
@@ -52,25 +59,29 @@ struct Array2DB :CustomStringConvertible {
     }
     
     //sets a cell to become alive on the next run
-    mutating func setCellAlive(x:Int, y:Int) {
-        values[getIndex(row:x, col:y)] = 1
+    mutating func setCellAlive(row:Int, col:Int) {
+        values[getIndex(row:row, col:col)] = 1
     }
     
     //kill a cell for the next run
-    mutating func setCellDead(x:Int, y:Int) {
-        values[getIndex(row:x, col:y)] = 0
+    mutating func setCellDead(row:Int, col:Int) {
+        values[getIndex(row:row, col:col)] = 0
     }
     
     //reset
     mutating func resetColony() {
-        for x in values {
-            x = 0
+        for x in 0...values.count {
+            values[x] = 0
         }
     }
     
     //finds if the cell named is alive.
-    func isCellAlive(x:Int, y:Int) -> Bool {
-        return values[row:x, col:y]
+    func isCellAlive(row:Int, col:Int) -> CellState {
+        return values[getIndex(row:row, col:col)] == 1 ? CellState.alive : CellState.dead
+    }
+    
+    func numSurroundingCellsAlive(row:Int, col:Int) {
+        
     }
     
 }

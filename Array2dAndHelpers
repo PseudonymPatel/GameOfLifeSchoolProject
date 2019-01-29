@@ -1,10 +1,19 @@
 //Array2DB struct
 enum CellState {
-    case dead = 0, alive
+    case dead, alive, makeDead, makeAlive
 }
 
-struct Array2DB :CustomStringConvertible {
-    var values: [Int]
+struct Cell {
+    var state:CellState
+    var nextState:CellState?
+    
+    init(state:CellState) {
+        self.state = state
+    }
+}
+
+struct Array2DB:CustomStringConvertible {
+    var values: [Cell]
     let rows: Int
     let cols: Int
     
@@ -14,7 +23,7 @@ struct Array2DB :CustomStringConvertible {
         for r in 0..<rows {
             for c in 0..<cols {
                 if c == cols - 1 {
-                    d += "\(values[getIndex(row: r, col: c)])\n"
+                    d += "\(values[getIndex(row: r, col: c)])\n" //redo
                 } else {
                     d += "\(values[getIndex(row: r, col: c)])"
                 }
@@ -23,11 +32,15 @@ struct Array2DB :CustomStringConvertible {
         return d
     }
     
+    var count:Int {
+        return values.count
+    }
+    
     //a count of all the cells that are currently alive.
     var numberLivingCells:Int {
         var c = 0
         for i in values {
-            if i == 1 {
+            if i.state == CellState.alive {
                 c += 1
             }
         }
@@ -38,11 +51,11 @@ struct Array2DB :CustomStringConvertible {
     init(rows: Int, cols: Int) {
         self.rows = rows
         self.cols = cols
-        values = [Int](repeating: 0, count: (rows+2)*(cols+2))
+        values = [Cell](repeating: 0, count: (rows+2)*(cols+2)) //TODO: redo so it works
     }
     
     //allows us to use the syntax [row, col] when interacting with an Array2DB
-    subscript(row: Int, col: Int) -> Int {
+    subscript(row: Int, col: Int) -> Cell {
         get {
             return values[getIndex(row: row, col: col)]
         }
@@ -58,30 +71,45 @@ struct Array2DB :CustomStringConvertible {
         return (row + 1)*rows + col + 1
     }
     
+}
+
+class Colony {
+    var name:String
+    var array:Array2DB
+    
+    init(name:String, size:Int) {
+        self.name = name
+        self.array = Array2DB(rows:size, cols:size)
+    }
+    
     //sets a cell to become alive on the next run
-    mutating func setCellAlive(row:Int, col:Int) {
-        values[getIndex(row:row, col:col)] = 1
+    func setCellAlive(row:Int, col:Int) {
+        array[row, col].state = CellState.makeAlive
     }
     
     //kill a cell for the next run
-    mutating func setCellDead(row:Int, col:Int) {
-        values[getIndex(row:row, col:col)] = 0
+    func setCellDead(row:Int, col:Int) {
+        array[row, col].state = CellState.makeDead
     }
     
     //reset
-    mutating func resetColony() {
-        for x in 0...values.count {
-            values[x] = 0
+    func resetColony() {
+        for r in 0..<array.rows {
+            for c in 0..<array.cols {
+                
+            }
         }
     }
     
     //finds if the cell named is alive.
     func isCellAlive(row:Int, col:Int) -> CellState {
-        return values[getIndex(row:row, col:col)] == 1 ? CellState.alive : CellState.dead
+        return array[row, col].state
     }
     
-    func numSurroundingCellsAlive(row:Int, col:Int) {
+    func numSurroundingCellsAlive(row:Int, col:Int) -> Int {
         
     }
     
 }
+
+var a = Array2DB(rows:10, cols:10)

@@ -19,7 +19,7 @@ struct Array2DB:CustomStringConvertible {
     //creates the 2-dimensional abstraction of our 'values' array
     var description: String {
         let deadCellIcon = "+ "
-        let aliveCellIcon = "0 "
+        let aliveCellIcon = "█ "
         var d = ""
         for r in 0..<rows {
             for c in 0..<cols {
@@ -33,10 +33,10 @@ struct Array2DB:CustomStringConvertible {
         }
         return d
     }
-    
+    /*
     var count:Int {
         return values.count
-    }
+    }*/
     
     //a count of all the cells that are currently alive.
     var numberLivingCells:Int {
@@ -146,23 +146,23 @@ class Colony:CustomStringConvertible {
                     //if cell is currently alive
                     if array[r,c].state == CellState.alive {
                         switch surrounding {
-                            case 0...1: //dies
-                                array[r,c].state = CellState.makeDead
-                            case 2...3: //nothing
-                                array[r,c].state = CellState.alive //redundant but for readability -- remove for unmaintainablility compliance
-                            case 4...8: //dies
-                                array[r,c].state = CellState.makeDead
-                            default:
-                                print("https://youtu.be/LDU_Txk06tM")
+                        case 0...1: //dies (0...1)
+                            array[r,c].state = CellState.makeDead
+                        case 2...3: //nothing (2...3)
+                            array[r,c].state = CellState.alive //redundant but for readability -- remove for unmaintainablility compliance
+                        case 4...8: //dies (4...8)
+                            array[r,c].state = CellState.makeDead
+                        default:
+                            print("https://youtu.be/LDU_Txk06tM")
                         }
                     } else { //cell is currently dead.
-                        if surrounding == 3 {
+                        if surrounding == 3 { //surrounding == 3
                             array[r, c].state = CellState.makeAlive
                         }
                     }
                 }
             }
-            
+			
             //making the marked cells into what they actually are
             for r in 0..<array.rows {
                 for c in 0..<array.cols {
@@ -191,16 +191,16 @@ a.setCellAlive(6,6, now:true)
 a.evolve(forTurns:100)
 
 /*
-
-+ + + + + +  row
-+ 0 + + + +
-+ + + + + +
-+ + + + + +
-+ + + + + +
-+ + + + + +
-  
-  c
-  o
-  l
-
-*/
+ 
+ + + + + + +  row
+ + 0 + + + +
+ + + + + + +
+ + + + + + +
+ + + + + + +
+ + + + + + +
+ 
+ c
+ o
+ l
+ 
+ */

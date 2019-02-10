@@ -1,3 +1,8 @@
+func splitStringIntoParts(_ expression: String) -> [String] {
+    if expression == " " || expression == "" { return [""] }
+	return expression.split{$0 == " "}.map{String($0)}
+}
+
 //Array2DB struct
 enum CellState {
     case dead, alive, makeDead, makeAlive
@@ -53,7 +58,7 @@ struct Array2DB:CustomStringConvertible {
     init(rows: Int, cols: Int) {
         self.rows = rows
         self.cols = cols
-        values = [Cell](repeating: Cell(state:CellState.dead), count: (rows+2)*(cols+2)) //TODO: redo so it works
+        values = [Cell](repeating: Cell(state:CellState.dead), count: (rows+2)*(cols+2))
     }
     
     //allows us to use the syntax [row, col] when interacting with an Array2DB
@@ -120,7 +125,54 @@ class Colony:CustomStringConvertible {
     
     func numSurroundingCellsAlive(_ row:Int,_ col:Int) -> Int {
         var c:Int = 0
-        let cellsToCheck = [(row-1,col-1), (row-1, col), (row-1, col+1), (row, col-1), (row, col+1), (row+1,col-1), (row+1, col), (row+1, col+1)]
+		var cellsToCheck = [(row-1,col-1), (row-1, col), (row-1, col+1), (row, col-1), (row, col+1), (row+1,col-1), (row+1, col), (row+1, col+1)]
+		
+		/*
+		
+		0 1 2 + + r
+		3 x 4 + +
+		5 6 7 + +
+		+ + + + +
+		+ + + + +
+		c
+		*/
+
+		//for edge cases (puns reeeeee)
+		if row == 0 { //for top row
+			cellsToCheck.remove(at: 0)
+			cellsToCheck.remove(at: 0) //the index change when remove
+			cellsToCheck.remove(at: 0)
+
+			if col == 0 { //top left corner
+				cellsToCheck.remove(at: 0)
+				cellsToCheck.remove(at: 1)
+			} else if col == array.cols { //top right corner
+				cellsToCheck.remove(at: 1)
+				cellsToCheck.remove(at: 3)
+			}
+		} else if row == array.rows { //bottom row
+			cellsToCheck.remove(at: 5)
+			cellsToCheck.remove(at: 5)
+			cellsToCheck.remove(at: 5)
+
+			if col == 0 { //bottom left corner
+				cellsToCheck.remove(at: 0)
+				cellsToCheck.remove(at: 2)
+			} else if col == array.cols { //bottom right corner
+				cellsToCheck.remove(at: 2)
+				cellsToCheck.remove(at: 3)
+			}
+		} else if col == 0 { //left col
+			cellsToCheck.remove(at: 0)
+			cellsToCheck.remove(at: 2)
+			cellsToCheck.remove(at: 3)
+		} else if col == array.cols { //right col
+			cellsToCheck.remove(at: 2)
+			cellsToCheck.remove(at: 3)
+			cellsToCheck.remove(at: 5)
+		}
+        
+		//goes through the list of cellsToCheck to find surrounding cells
         for check in cellsToCheck {
             if array[check.0, check.1].state == CellState.alive || array[check.0, check.1].state == CellState.makeDead {
                 c += 1
@@ -133,9 +185,13 @@ class Colony:CustomStringConvertible {
     func evolve(forTurns t:Int = -2) { // -2 means forever
         exit = false
         var i:Int = t
+		if generation != 0 {
+			i -= 1
+		}
+
         while (t == -2 && !exit) || (i >= 0 && i <= t && !exit) {
             print(self) //shows current state of the generation
-            if array.numberLivingCells == 0 {
+            if array.numberLivingCells == 0 { //TODO: add exit if nothing changes in a generation
                 print("oOF wE dED")
                 exit = true
             }
@@ -177,11 +233,12 @@ class Colony:CustomStringConvertible {
             
             //iterate to the next generation
             i -= 1
-            generation = t-i
+            generation += 1
         }
     }
 }
 
+/*
 var a = Colony(name:"test colony", size:20)
 a.setCellAlive(4,7, now:true)
 a.setCellAlive(5,8, now:true)
@@ -189,7 +246,7 @@ a.setCellAlive(6,8, now:true)
 a.setCellAlive(6,7, now:true)
 a.setCellAlive(6,6, now:true)
 a.evolve(forTurns:100)
-
+*/
 /*
  
  + + + + + +  row

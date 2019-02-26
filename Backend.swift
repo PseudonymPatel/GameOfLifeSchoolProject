@@ -237,27 +237,3 @@ class Colony:CustomStringConvertible {
         }
     }
 }
-
-/*
-var a = Colony(name:"test colony", size:20)
-a.setCellAlive(4,7, now:true)
-a.setCellAlive(5,8, now:true)
-a.setCellAlive(6,8, now:true)
-a.setCellAlive(6,7, now:true)
-a.setCellAlive(6,6, now:true)
-a.evolve(forTurns:100)
-*/
-/*
- 
- + + + + + +  row
- + 0 + + + +
- + + + + + +
- + + + + + +
- + + + + + +
- + + + + + +
- 
- c
- o
- l
- 
- */
